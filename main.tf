@@ -17,6 +17,12 @@ resource "google_compute_network" "anthos-bare-metal" {
   auto_create_subnetworks = true
   project = var.project_id
 }
+resource "google_compute_subnetwork" "network-with-private-secondary-ip-ranges" {
+  name          = "anthos-bm-subnetwork"
+  ip_cidr_range = var.subnetwork_range
+  region        = "us-central1"
+  network       = google_compute_network.anthos-bare-metal.id
+}
 
 resource "google_compute_router" "router" {
   project = var.project_id
@@ -56,7 +62,7 @@ resource "google_compute_firewall" "default-allows-internal" {
   allow {
     protocol = "icmp"
   }
-  source_ranges = ["10.128.0.0/9"]
+  source_ranges = var.default-allows-internal-source_ranges
   depends_on = [
     google_compute_network.anthos-bare-metal
   ]
@@ -69,7 +75,7 @@ resource "google_compute_firewall" "default-allows-icmp" {
   allow {
     protocol = "icmp"
   }
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = var.default-allows-icmp-source_ranges
   depends_on = [
     google_compute_network.anthos-bare-metal
   ]
@@ -83,7 +89,7 @@ resource "google_compute_firewall" "default-allows-ssh" {
     protocol = "tcp"
     ports     = ["22","3389"]
   }
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = var.default-allows-ssh-source_ranges
   depends_on = [
     google_compute_network.anthos-bare-metal
   ]
@@ -97,7 +103,7 @@ resource "google_compute_firewall" "allow-healthcheck" {
     protocol = "tcp"
   }
 
-  source_ranges = ["35.191.0.0/16","130.211.0.0/22"]
+  source_ranges = var.allow-healthcheck-source_ranges
   depends_on = [
     google_compute_network.anthos-bare-metal
   ]
