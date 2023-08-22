@@ -83,6 +83,7 @@ resource "google_compute_firewall" "default-allows-icmp" {
 }
 
 resource "google_compute_firewall" "default-allows-ssh" {
+  project = var.project_id
   name    = "allows-${google_compute_network.anthos-bare-metal.name}-ssh"
   network = google_compute_network.anthos-bare-metal.name
 
