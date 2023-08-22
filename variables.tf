@@ -1,10 +1,10 @@
 variable "region" {
-  type = string
+  type        = string
   description = "The default Google Cloud region."
 }
 
 variable "project_id" {
-  type = string
+  type        = string
   description = "Google Cloud project ID."
 }
 variable "subnetwork_range" {

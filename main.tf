@@ -14,7 +14,7 @@
 
 resource "google_compute_network" "anthos-bare-metal" {
   name                    = "anthos-bm-vpc"
-  auto_create_subnetworks = true
+  auto_create_subnetworks = false
   project                 = var.project_id
 }
 resource "google_compute_subnetwork" "network-with-private-secondary-ip-ranges" {
