@@ -15,9 +15,10 @@
 resource "google_compute_network" "anthos-bare-metal" {
   name                    = "anthos-bm-vpc"
   auto_create_subnetworks = true
-  project = var.project_id
+  project                 = var.project_id
 }
 resource "google_compute_subnetwork" "network-with-private-secondary-ip-ranges" {
+  project       = var.project_id
   name          = "anthos-bm-subnetwork"
   ip_cidr_range = var.subnetwork_range
   region        = "us-central1"
@@ -36,7 +37,7 @@ resource "google_compute_router" "router" {
 }
 
 resource "google_compute_router_nat" "nat" {
-  project = var.project_id
+  project                            = var.project_id
   name                               = "${google_compute_network.anthos-bare-metal.name}-nat"
   router                             = google_compute_router.router.name
   region                             = google_compute_router.router.region
@@ -50,7 +51,7 @@ resource "google_compute_router_nat" "nat" {
 }
 
 resource "google_compute_firewall" "default-allows-internal" {
-  name = "allow-${google_compute_network.anthos-bare-metal.name}-internal"
+  name    = "allow-${google_compute_network.anthos-bare-metal.name}-internal"
   network = google_compute_network.anthos-bare-metal.name
   project = var.project_id
   allow {
@@ -69,7 +70,7 @@ resource "google_compute_firewall" "default-allows-internal" {
 }
 
 resource "google_compute_firewall" "default-allows-icmp" {
-  name = "allows-${google_compute_network.anthos-bare-metal.name}-icmp"
+  name    = "allows-${google_compute_network.anthos-bare-metal.name}-icmp"
   network = google_compute_network.anthos-bare-metal.name
   project = var.project_id
   allow {
@@ -82,12 +83,12 @@ resource "google_compute_firewall" "default-allows-icmp" {
 }
 
 resource "google_compute_firewall" "default-allows-ssh" {
-  name = "allows-${google_compute_network.anthos-bare-metal.name}-ssh"
+  name    = "allows-${google_compute_network.anthos-bare-metal.name}-ssh"
   network = google_compute_network.anthos-bare-metal.name
 
   allow {
     protocol = "tcp"
-    ports     = ["22","3389"]
+    ports    = ["22", "3389"]
   }
   source_ranges = var.default-allows-ssh-source_ranges
   depends_on = [
@@ -96,7 +97,7 @@ resource "google_compute_firewall" "default-allows-ssh" {
 }
 
 resource "google_compute_firewall" "allow-healthcheck" {
-  name = "allows-${google_compute_network.anthos-bare-metal.name}-healthcheck"
+  name    = "allows-${google_compute_network.anthos-bare-metal.name}-healthcheck"
   network = google_compute_network.anthos-bare-metal.name
   project = var.project_id
   allow {
